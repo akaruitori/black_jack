@@ -1,3 +1,6 @@
+require_relative 'deck'
+require_relative 'game'
+
 # greet user
 # ask user's name
 # create player for user
@@ -5,11 +8,11 @@
 # create deck
 # loop until true
 #   shuffle deck
-#   deal cards 
+#   deal cards
 #   show cards
 #   make stakes
-#   loop until both players have 3 cards or 
-#     user choose his move (exit loop if user wish to open his cards)
+#   loop until both players have 3 cards
+#     user choose his move (exit loop if user wish to open cards)
 #     dealer choose his move
 #   show result
 #   game bank goes to winner
