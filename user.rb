@@ -1,3 +1,5 @@
+require_relative 'player'
+
 class User < Player
   def initialize(balance, name)
     super(balance)
@@ -5,6 +7,6 @@ class User < Player
   end
 
   def to_s
-    @name
+    "#{@name}"
   end
 end

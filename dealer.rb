@@ -1,3 +1,5 @@
+require_relative 'player'
+
 class Dealer < Player
   def show_cards(hide_values = true)
     if hide_values
