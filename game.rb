@@ -1,3 +1,5 @@
+require_relative 'game_interface'
+
 class Game
   attr_reader :bank
   attr_accessor :deck
@@ -10,6 +12,7 @@ class Game
     @deck = deck
     @players = [user, dealer]
     @bank = 0
+    @interface = GameInterface.new
   end
 
   def deal_cards(number)
@@ -25,11 +28,7 @@ class Game
   end
 
   def show_cards
-    @players.each do |player|
-      puts "#{player}'s cards: #{player.show_cards}"
-      puts "Corrent score: #{player.score}" unless player.is_a?(Dealer)
-      puts
-    end
+    @players.each { |player| @interface.show_cards(player) }
   end
 
   def play_round
@@ -51,7 +50,7 @@ class Game
       winner.balance += @bank
       @bank = 0
     end
-    show_round_result(winner)
+    @interface.show_round_result(winner, @players)
   end
 
   def players_have_enough_money?
@@ -73,24 +72,9 @@ class Game
     end
   end
 
-
-  def show_round_result(winner)
-    puts "***Round results:***"
-    if winner == :no_one
-      puts 'A tie!'
-    else
-      puts "#{winner} won!"
-    end
-
-    @players.each do |player|
-      puts "#{player}'s cards: #{player.show_cards(hide_values = false)}"
-      puts "Score: #{player.score}\nBalance: #{player.balance}"
-    end
-  end
- 
   def calculate_score(cards)
     score = cards.map { |card| card.points }.sum
-    score - 10 if score > 21 && cards.map(&:value).include?('A')
+    score -= 10 if score > 21 && cards.map(&:value).include?('A')
     score
   end
 
@@ -111,24 +95,13 @@ class Game
     available_moves.delete(:add_card) if player.cards.size == MAX_CARDS_NUMBER
 
     begin
-      choice = ask_for_user_move(player, available_moves) - 1
+      choice = @interface.ask_for_move(player, available_moves) - 1
     rescue RuntimeError => error_message
-      puts error_message
+      @interface.show(error_message)
       retry
     end
 
     available_moves.at(choice)
-  end
-
-  def ask_for_user_move(player, available_moves)
-    puts "#{player}, choose your move:"
-    available_moves.each_with_index { |move, i| puts "#{i + 1}: #{MOVES[move]}" }
-    choice = gets.to_i
-
-    unless (1..available_moves.size).cover?(choice)
-      raise 'Please, enter one of the digits.'
-    end
-    choice
   end
 
   def make_dealer_move(player)
@@ -137,8 +110,7 @@ class Game
            else
              :add_card
            end
-
-    puts "Dealer chose to #{MOVES[move]}"
+    @interface.show_move(player, move)
     move
   end
 
