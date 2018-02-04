@@ -143,20 +143,13 @@ class Game
   end
 
   def define_winner
-    player, dealer = @players
-
-    if player.score > 21 && dealer.score > 21
+    players = @players.sort_by { |player| player.score }
+    if players.first.score > 21 || players.first.score == players.last.score
       :no_one
-    elsif player.score <= 21 && dealer.score > 21
-      player
-    elsif dealer.score <= 21 && player.score > 21
-      dealer
+    elsif players.last.score <= 21
+      players.last
     else
-      case player.score <=> dealer.score
-      when 1 then player
-      when 0 then :no_one
-      when -1 then dealer
-      end
+      players.first
     end
   end
 end
